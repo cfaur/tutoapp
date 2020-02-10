@@ -1,5 +1,5 @@
-import React from "react";
-import Board  from "./Board"
+import React, { useState } from "react";
+import Board from "./Board";
 
 interface IGame {
 
@@ -7,17 +7,17 @@ interface IGame {
 
 const Game: React.FC<IGame> = props => {
 
-    return (
-        <div className="game">
-          <div className="game-board">
-            <Board />
-          </div>
-          <div className="game-info">
-            <div>{/* status */}</div>
-            <ol>{/* TODO */}</ol>
-          </div>
+  const [gameId, setGameId] = useState(1);
+
+  return (
+      <div className="game">
+        <div className="game-board">
+          <div>
+            <Board key={gameId} startNewGame={() => setGameId(gameId + 1)}/>
+          </div>     
         </div>
-      );
+      </div>
+    );
 }
 
 export default Game;

@@ -109,7 +109,7 @@ const Board: React.FC<IBoard> = props => {
     }
 
    return (        
-        <div style={{flexGrow: 1, minWidth: 240}}>
+        <div style={{minWidth: 240}}>
             <StatusLabel playerName={getLetterForPlayer(currentPlayer)} gameStatus={gameStatus} />
             { range(0, 2).map(val => renderRow(val*3, (val*3)+2)) }  
             { gameStatus !== 'active' && <DefaultButton style={{margin: 25}} text = 'Play again' onClick={props.startNewGame} />  }         

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Label, PrimaryButton, ILabelStyles, FontSizes, IContextualMenuProps, DefaultButton, Stack } from "office-ui-fabric-react";
+import { Label, PrimaryButton, ILabelStyles, FontSizes, IContextualMenuProps, DefaultButton, Stack, StackItem } from "office-ui-fabric-react";
 import ScoreVisibilityButton from "./ScoreVisibilityButton";
 import { PointAttribution, getRandomInt, X_COLOR, O_COLOR } from "./Utils";
 
@@ -16,6 +16,7 @@ const ScorePanel: React.FC<IScorePanel> = props => {
     const labelStyles: ILabelStyles = {
         root: {
             fontSize: FontSizes.xLarge,
+            marginTop: 15,
             marginBottom: 5
         }
     }
@@ -37,30 +38,46 @@ const ScorePanel: React.FC<IScorePanel> = props => {
         ]
     };
       
-    const [showScores, setShowScores] = useState(false);
+    const [showScores, setShowScores] = useState(true);
 
     return (
-        <div>
-            <ScoreVisibilityButton currentlyVisible={showScores} onClick={() => {setShowScores(!showScores)}}/>
+        <Stack 
+            verticalAlign="space-around"
+            tokens={{padding: "20px 0px 0px 0px"}}>
+            <ScoreVisibilityButton 
+                currentlyVisible={showScores} 
+                onClick={() => setShowScores(!showScores)} />
+
             {showScores && 
-                <Stack gap={5} style={{marginTop: 50}}>
-                    <Label styles={labelStyles}
-                           style={{backgroundColor: X_COLOR}}>X score: {props.scoreX}</Label>
-                    <Label styles={labelStyles}
-                           style={{backgroundColor: O_COLOR}}>O score: {props.scoreO}</Label>
-                    <Label styles={labelStyles}>Ties: {props.ties}</Label>
-                    <PrimaryButton onClick={props.onResetClick}>Reset scores</PrimaryButton>
+                <Stack                
+                    horizontalAlign="stretch"                
+                    verticalAlign="end"
+                    tokens={{childrenGap: 5}} >
                     
+                    <Label 
+                        styles={labelStyles}
+                        style={{backgroundColor: X_COLOR}}>X score: {props.scoreX}</Label>
+                
+                    <Label 
+                        styles={labelStyles}
+                        style={{backgroundColor: O_COLOR}}>O score: {props.scoreO}</Label>
+                
+                    <Label 
+                        styles={labelStyles}>Ties: {props.ties}</Label>
+                
+                    <PrimaryButton 
+                        text="Reset scores"
+                        onClick={props.onResetClick} />
+                                
                     <DefaultButton
                         text="Cheat"
                         split
                         splitButtonAriaLabel="Cheating options: for player X or player O"
                         aria-roledescription="split button"
                         menuProps={menuProps}                    
-                    />                   
-                    
+                    />
                 </Stack>}
-        </div>
+        </Stack>
     );
 }
 

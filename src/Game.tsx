@@ -3,6 +3,7 @@ import Board from "./Board";
 import ScorePanel from "./ScorePanel";
 import ConfirmResetDialog from "./ConfirmResetDialog";
 import { PointAttribution } from "./Utils";
+import { Stack, StackItem } from "office-ui-fabric-react";
 
 
 
@@ -46,24 +47,26 @@ const Game: React.FC<IGame> = props => {
       <ConfirmResetDialog hideDialog={hideDialog} 
                           resetFunction={() => {resetScores(); closeDialog();}} 
                           cancelFunction={() => closeDialog()}/>
-      <table style={{width: "100%", marginLeft: "auto", marginRight: "auto"}}>
-        <tr>
-          <td style={{padding: 20}}>  
-            <div>
-                <Board key={gameId} 
-                       startNewGame={() => setGameId(gameId + 1)}
-                       addPoints={addPoints} />
-            </div>    
-          </td>
-          <td style={{padding: "30px 30px 20px 30px", verticalAlign: "top"}}>
-            <ScorePanel scoreX={points.scoreX} 
-                        scoreO={points.scoreO} 
-                        ties={points.tie}
-                        onResetClick={showDialog}
-                        addPoints={addPoints}/> 
-          </td>
-        </tr>
-      </table>
+      <Stack horizontal     
+             horizontalAlign="center"        
+             verticalAlign="stretch"
+             tokens={{maxWidth: "1920px", padding: 20, childrenGap: 30}} >
+        
+          <StackItem grow={0} disableShrink={true}>
+            <Board key={gameId} 
+                  startNewGame={() => setGameId(gameId + 1)}
+                  addPoints={addPoints} />
+          </StackItem>
+
+          <StackItem grow={0.2} shrink={1} tokens={{}}>
+          <ScorePanel scoreX={points.scoreX} 
+                      scoreO={points.scoreO} 
+                      ties={points.tie}
+                      onResetClick={showDialog}
+                      addPoints={addPoints}/> 
+          </StackItem>
+        
+      </Stack>
     </div>
   );
 }

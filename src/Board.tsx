@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Square from "./Square";
 import StatusLabel from "./StatusLabel"
 import { range, PointAttribution, getRandomInt } from "./Utils"
@@ -11,16 +11,31 @@ interface IBoard {
 
 const Board: React.FC<IBoard> = props => {    
     
+    const initStatus: string = 'active';
     //Picks 1 or 2 randomly
     const firstPlayer: number = getRandomInt(1, 2);
     const initX: number[] = [];
-    const initO: number[] = [];
-    const initStatus: string = 'active';
+    const initO: number[] = [];    
 
+    const [gameStatus, setGameStatus] = useState(initStatus);
     const [currentPlayer, setCurrentPlayer] = useState(firstPlayer);
+
     const [XOwned, setXOwned] = useState(initX);
     const [OOwned, setOOwned] = useState(initO);
-    const [gameStatus, setGameStatus] = useState(initStatus);
+    
+    useEffect(() => {
+        if((XOwned.length + OOwned.length) > 0)
+        {
+            if(currentPlayer === 1 && !isGameDone(XOwned, OOwned.length))
+            {
+                setCurrentPlayer(2);
+            }
+            else if(!isGameDone(OOwned, XOwned.length))
+            {
+                setCurrentPlayer(1);
+            }
+        }
+    }, [XOwned, OOwned])
 
     const getLetterForPlayer = (id: number) => {
         return (id === 1 ? 'X': 'O');
@@ -40,7 +55,7 @@ const Board: React.FC<IBoard> = props => {
         return 0;
     }
 
-    const isGameDone = (currentPlayerOwned: number[], lastValClicked: number, nbOpponentOwned: number) => {
+    const isGameDone = (currentPlayerOwned: number[], nbOpponentOwned: number) => {
         const lines = [
           [0, 1, 2],
           [3, 4, 5],
@@ -52,10 +67,9 @@ const Board: React.FC<IBoard> = props => {
           [2, 4, 6],
         ];
         
-        const currentlyOwned = currentPlayerOwned.concat(lastValClicked);
         const winningArray: boolean[] = lines.map(winningLine => { 
             return (winningLine.every(element => { 
-                        return currentlyOwned.includes(element) }) ? true : false) 
+                        return currentPlayerOwned.includes(element) }) ? true : false) 
             });
 
         if(winningArray.includes(true))
@@ -66,7 +80,7 @@ const Board: React.FC<IBoard> = props => {
         }
 
         // game is not won but we should check for tie        
-        if(currentlyOwned.length + nbOpponentOwned === 9)
+        if(currentPlayerOwned.length + nbOpponentOwned === 9)
         {
             setGameStatus('tie');
             props.addPoints(1, PointAttribution.Tie);
@@ -77,18 +91,7 @@ const Board: React.FC<IBoard> = props => {
     }
 
     const handleSquareClick = (valClicked: number) => {
-        if(currentPlayer === 1)
-        {
-            setXOwned(XOwned.concat(valClicked));
-            if(!isGameDone(XOwned, valClicked, OOwned.length))
-                setCurrentPlayer(2);
-        }
-        else if(currentPlayer === 2)
-        {
-            setOOwned(OOwned.concat(valClicked));
-            if(!isGameDone(OOwned, valClicked, XOwned.length))
-                setCurrentPlayer(1);
-        }
+        (currentPlayer === 1) ? setXOwned(XOwned.concat(valClicked)) : setOOwned(OOwned.concat(valClicked));        
     }
 
     const renderSquare = (i: number) => {

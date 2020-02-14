@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import Square from "./Square";
 import StatusLabel from "./StatusLabel"
-import { range } from "./Utils"
+import { range, PointAttribution, getRandomInt } from "./Utils"
 import { DefaultButton } from "office-ui-fabric-react";
 
 interface IBoard {
     startNewGame: () => void
+    addPoints: (pointsToAdd: number, attributedTo: PointAttribution) => void
 }
 
 const Board: React.FC<IBoard> = props => {    
     
     //Picks 1 or 2 randomly
-    const firstPlayer: number = 1 + Math.floor(Math.random() * 2);
+    const firstPlayer: number = getRandomInt(1, 2);
     const initX: number[] = [];
     const initO: number[] = [];
     const initStatus: string = 'active';
@@ -60,6 +61,7 @@ const Board: React.FC<IBoard> = props => {
         if(winningArray.includes(true))
         {
             setGameStatus('won');
+            props.addPoints(1, currentPlayer);
             return true;
         }
 
@@ -67,6 +69,7 @@ const Board: React.FC<IBoard> = props => {
         if(currentlyOwned.length + nbOpponentOwned === 9)
         {
             setGameStatus('tie');
+            props.addPoints(1, PointAttribution.Tie);
             return true;
         }
 
@@ -89,13 +92,12 @@ const Board: React.FC<IBoard> = props => {
     }
 
     const renderSquare = (i: number) => {
-        return <Square 
-            key={i} 
-            value={i} 
-            ownedBy={getOwner(i)} 
-            currentPlayer={currentPlayer} 
-            gameStatus={gameStatus}
-            onClick={handleSquareClick}/>;
+        return <Square key={i} 
+                       value={i} 
+                       ownedBy={getOwner(i)} 
+                       currentPlayer={currentPlayer} 
+                       gameStatus={gameStatus}
+                       onClick={handleSquareClick}/>;
     }
 
     const renderRow = (start: number, end: number) => {
@@ -107,7 +109,7 @@ const Board: React.FC<IBoard> = props => {
     }
 
    return (        
-        <div>
+        <div style={{flexGrow: 1, minWidth: 240}}>
             <StatusLabel playerName={getLetterForPlayer(currentPlayer)} gameStatus={gameStatus} />
             { range(0, 2).map(val => renderRow(val*3, (val*3)+2)) }  
             { gameStatus !== 'active' && <DefaultButton style={{margin: 25}} text = 'Play again' onClick={props.startNewGame} />  }         
